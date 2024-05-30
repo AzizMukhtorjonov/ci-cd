@@ -1,0 +1,25 @@
+name: ${SERVICE_NAME}
+
+services:
+  app:
+    container_name: ${IMAGE_NAME}
+    image: ${IMAGE_NAME}:latest
+    build:
+      context: ${PROJECT_ROOT}
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/app/deploy
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - "${PROJECT_ROOT}/${ENV_FILE}"
+    networks:
+      - local_network
+    stdin_open: true
+    tty: true
+
+networks:
+  local_network:
+    external: true
