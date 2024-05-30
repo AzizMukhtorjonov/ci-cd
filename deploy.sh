@@ -18,6 +18,7 @@ SERVICE_NAME=$(jq -r '.name' package.json)
 PORT=$(jq -r '.APP_PORT' "$DEPLOY_CONFIG_FILE")
 APP_NAME=$(jq -r '.APP_NAME' "$DEPLOY_CONFIG_FILE")
 ENTRY_FILE=$(jq -r '.ENTRY_FILE' "$DEPLOY_CONFIG_FILE")
+ENV_FILE=$(jq -r '.ENV_FILE' "$DEPLOY_CONFIG_FILE")
 
 IMAGE_NAME="$SERVICE_NAME-$APP_NAME"
 
@@ -26,6 +27,7 @@ export IMAGE_NAME=$IMAGE_NAME
 export SERVICE_NAME="$SERVICE_NAME"
 export APP_NAME=$APP_NAME
 export ENTRY_FILE=$ENTRY_FILE
+export ENV_FILE=$ENV_FILE
 export PROJECT_ROOT=$(pwd)
 
 docker-compose -f deploy/docker-compose.yml stop
