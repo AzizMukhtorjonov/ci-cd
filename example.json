@@ -1,5 +1,5 @@
 {
-  "APP_NAME": "main",
+  "APP_NAME": "main-application",
   "ENTRY_FILE": "build/applications/main.js",
   "ENV_FILE": ".env.docker",
   "APP_PORT": 1512
