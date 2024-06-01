@@ -17,7 +17,7 @@ SERVICE_NAME=$(jq -r '.name' package.json)
 
 PORT=$(jq -r '.APP_PORT' "$DEPLOY_CONFIG_FILE")
 APP_NAME=$(jq -r '.APP_NAME' "$DEPLOY_CONFIG_FILE")
-ENTRY_FILE=$(jq -r '.ENTRY_FILE' "$DEPLOY_CONFIG_FILE")
+NPM_SCRIPT=$(jq -r '.NPM_SCRIPT' "$DEPLOY_CONFIG_FILE")
 ENV_FILE=$(jq -r '.ENV_FILE' "$DEPLOY_CONFIG_FILE")
 
 IMAGE_NAME="$SERVICE_NAME-$APP_NAME"
@@ -26,7 +26,7 @@ export PORT=$PORT
 export IMAGE_NAME=$IMAGE_NAME
 export SERVICE_NAME="$SERVICE_NAME"
 export APP_NAME=$APP_NAME
-export ENTRY_FILE=$ENTRY_FILE
+export NPM_SCRIPT=$NPM_SCRIPT
 export ENV_FILE=$ENV_FILE
 export PROJECT_ROOT=$(pwd)
 
@@ -37,7 +37,7 @@ if docker images | grep -q "$IMAGE_NAME"; then
   docker rmi "$IMAGE_NAME"
 fi
 
-docker-compose -f deploy/docker-compose.yml build --build-arg ENTRY_FILE=$ENTRY_FILE
+docker-compose -f deploy/docker-compose.yml build --build-arg NPM_SCRIPT=$NPM_SCRIPT
 
 docker-compose -f deploy/docker-compose.yml up -d
 
