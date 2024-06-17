@@ -19,6 +19,8 @@ services:
       - local_network
     stdin_open: true
     tty: true
+    logging:
+      driver: "json-file"
 
 networks:
   local_network:
