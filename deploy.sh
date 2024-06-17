@@ -30,6 +30,10 @@ export NPM_SCRIPT=$NPM_SCRIPT
 export ENV_FILE=$ENV_FILE
 export PROJECT_ROOT=$(pwd)
 
+if ! docker network ls | grep -q "local_network"; then
+  docker network create local_network
+fi
+
 docker-compose -f deploy/docker-compose.yml stop
 docker-compose -f deploy/docker-compose.yml rm -f
 
