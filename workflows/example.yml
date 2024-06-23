@@ -43,7 +43,7 @@ jobs:
             mkdir -p $DIRECTORY
             cd $DIRECTORY
 
-            git clone -b cicd https://github.com/${{ github.repository }} .          
+            git clone git@github.com:${{ github.repository }} .
             git submodule init
             git submodule update
 
