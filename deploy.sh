@@ -23,6 +23,8 @@ ENV_FILE=$(jq -r '.ENV_FILE' "$DEPLOY_CONFIG_FILE")
 
 IMAGE_NAME="$SERVICE_NAME-$APP_NAME"
 
+DEPLOY_DIRECTORY="ci-cd"
+
 export PORT=$PORT
 export IMAGE_NAME=$IMAGE_NAME
 export SERVICE_NAME="$SERVICE_NAME"
@@ -35,15 +37,15 @@ if ! docker network ls | grep -q "local_network"; then
   docker network create local_network
 fi
 
-docker-compose -f deploy/docker-compose.yml stop
-docker-compose -f deploy/docker-compose.yml rm -f
+docker-compose -f $DEPLOY_DIRECTORY/docker-compose.yml stop
+docker-compose -f $DEPLOY_DIRECTORY/docker-compose.yml rm -f
 
 if docker images | grep -q "$IMAGE_NAME"; then
   docker rmi "$IMAGE_NAME"
 fi
 
-docker-compose -f deploy/docker-compose.yml build --build-arg NPM_SCRIPT=$NPM_SCRIPT
+docker-compose -f $DEPLOY_DIRECTORY/docker-compose.yml build --build-arg NPM_SCRIPT=$NPM_SCRIPT
 
-docker-compose -f deploy/docker-compose.yml up -d
+docker-compose -f $DEPLOY_DIRECTORY/docker-compose.yml up -d
 
-docker-compose -f deploy/docker-compose.yml ps
+docker-compose -f $DEPLOY_DIRECTORY/docker-compose.yml ps
