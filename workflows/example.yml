@@ -1,0 +1,52 @@
+name: Build and deploy on Server
+
+on:
+  push
+
+env:
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  SERVER_USER: ${{ secrets.SERVER_USER }}
+  SERVER_HOST: ${{ secrets.SERVER_HOST }}
+  KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+  DIRECTORY: "${{ vars.DIRECTORY }}/${{ github.event.repository.name }}"
+
+jobs:
+  build-and-deploy:
+    environment: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ env.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Deploy on Server
+        run: |
+          ssh -t $SERVER_USER@$SERVER_HOST << EOF
+          
+            if [ -d "$DIRECTORY" ]; then
+              rm -rf $DIRECTORY
+            fi
+            mkdir -p $DIRECTORY
+            cd $DIRECTORY
+
+            git clone -b cicd https://github.com/${{ github.repository }} .          
+            git submodule init
+            git submodule update
+
+            echo "${{ secrets.ENVS }}" > .env
+            sh deploy.sh
+          
+            rm -rf $DIRECTORY
+          EOF
