@@ -6,10 +6,6 @@ on:
       - main
 
 env:
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-  SERVER_USER: ${{ secrets.SERVER_USER }}
-  SERVER_HOST: ${{ secrets.SERVER_HOST }}
-  KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
   DIRECTORY: "${{ vars.DIRECTORY }}/${{ github.event.repository.name }}"
 
 jobs:
@@ -26,16 +22,14 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Add server to known hosts
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ env.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+      - name: Confirm host key
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy on Server
         run: |
-          ssh -t $SERVER_USER@$SERVER_HOST << EOF
+          ssh -t "${{ secrets.SERVER_USER }}"@"${{ secrets.SERVER_HOST }}" << EOF
           
             if [ -d "$DIRECTORY" ]; then
               rm -rf $DIRECTORY
@@ -43,7 +37,7 @@ jobs:
             mkdir -p $DIRECTORY
             cd $DIRECTORY
 
-            git clone git@github.com:${{ github.repository }} .
+            git clone https://github.com/${{ github.repository }} .          
             git submodule init
             git submodule update
 
